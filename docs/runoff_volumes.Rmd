@@ -1,0 +1,39 @@
+---
+title: "Runoff Volumes"
+author: "Erika"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+```
+
+```{r}
+source(here::here("src", "storm_runoff.R"))
+
+fracs <- seq(from = 0.6, to = 0.8, by = 0.01)
+
+volumes <- predict_runoff(impervious_fraction = fracs, watershed_area = 182)
+
+volume_df <- data.frame(fracs, volumes)
+```
+
+```{r}
+volumes_plot <- ggplot(data = volume_df, aes(x = fracs, y = volumes)) +
+  geom_point() +
+  geom_line() +
+    labs(x = "Fraction of the watershed that is considered 'impervious' (unitless)", 
+       y = "Volume of stormwater that needs to be handled (cubic feet)")
+```
+
+```{r}
+ggsave(plot = volumes_plot,
+       here::here("figs", "volumes.png"),
+       width = 6,
+       height = 5)
+```
+
